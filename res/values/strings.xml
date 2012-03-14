@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">findmyroom</string>
+    <string name="connection_error">Connection error</string>
     <string name="find_my_room">Find my room</string>
     <string name="inside_or_near_room">
         I am currently inside or near room

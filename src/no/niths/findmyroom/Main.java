@@ -1,15 +1,20 @@
 package no.niths.findmyroom;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import no.niths.domain.signaling.AccessField;
+import no.niths.domain.signaling.Room;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -17,32 +22,24 @@ import android.widget.Toast;
 
 public class Main extends Activity {
 
-    private WifiManager wifiManager;
+    private WifiManager wifiManager; 
+    private Room[] rooms;
     private String currentRoom;
 
-    // In-memory map of rooms (key) and AP addresses (value)
-    private final Map<String, String> roomMap = new HashMap<String, String>() {{
-        put("00:26:cb:d1:2e:10", "45");
-        put("00:24:97:f2:92:e0", "39");
-        put("00:21:55:60:e7:d0", "39");
-        put("00:26:cb:d1:2d:a0", "77");
-        put("00:21:55:60:e6:10", "79 / 80");
-        put("00:21:55:60:e6:10", "81");
-        put("00:17:0f:e7:2d:60", "78");
-        put("00:23:04:88:d4:c0", "Vrimle");
-        put("00:24:97:f2:93:60", "Vrimle");
-    }};
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        configure();
+        setContentView(R.layout.main);
+        setUpRooms();
+        configureWifiListener();
+        configureButton();
     }
 
-    private void configure() {
-        setContentView(R.layout.main);
-        configureButton();
+    private void setUpRooms() {
+        rooms = new RoomController(this).fetchRooms();
+        Log.e("foo", "num: " + rooms.length);
+    }
 
+    private void configureWifiListener() {
         wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         registerReceiver(
                 broadcastReceiver,
@@ -56,7 +53,7 @@ public class Main extends Activity {
             public void onClick(View view) {
                 showToast(currentRoom);
             }
-        });
+        }); 
     }
 
     private void showToast(String message) {
@@ -67,11 +64,24 @@ public class Main extends Activity {
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            WifiInfo info = wifiManager.getConnectionInfo();
+            String bssid = info.getBSSID();
+            int speed = info.getLinkSpeed(); 
+            Toast.makeText(Main.this, "Speed: " + speed, Toast.LENGTH_LONG).show();
+
+//            for (Room room : rooms) {
+//                List<AccessField> accessFields = room.getAccessFields();
+//
+//                for (AccessField accessField : accessFields) {
+//                    if (speed < accessField.getMinRange() &&
+//                            speed >)
+//                }
+//            }
+
             setCurrentRoom(wifiManager.getConnectionInfo().getBSSID());
         }
     };
 
     private void setCurrentRoom(String currentBSSID) {
-        currentRoom = roomMap.get(currentBSSID);
     }
 }
