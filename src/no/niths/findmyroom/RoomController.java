@@ -4,6 +4,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import config.ServerURL;
+
+import domain.Room;
+
 import android.content.Context;
 import android.util.Log;
 
@@ -13,8 +17,6 @@ public class RoomController {
     private RestTemplate rest; 
 
     public RoomController(Context context) {
-        Log.e("foo", "URL: " + ServerURL.LOCAL_URL.getURL());
-
         this.context = context;
         rest = new RestTemplate();
     }

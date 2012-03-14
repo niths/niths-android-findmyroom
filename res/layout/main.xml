@@ -2,10 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
-    <Button
-        android:id="@+id/btnFindMyRoom"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/tevInsideOrNearRoom"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/find_my_room" />
+        android:gravity="center_horizontal"
+        android:text="@string/inside_or_near"/>
+    <TextView
+        android:id="@+id/tevRoom"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/unknown_room"
+        android:textSize="50dp"/>
 </LinearLayout>

@@ -8,79 +8,100 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.Toast;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.TextView;
+import domain.Room;
 
 public class Main extends Activity {
 
-    private WifiManager wifiManager; 
+    private TextView tevRoom;
+    private RoomController controller;
     private Room[] rooms;
-    private String currentRoom;
+    private WifiManager wifiManager;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        configure();
+    }
+
+    private void configure() {
         setContentView(R.layout.main);
-        setUpRooms();
-        configureWifiListener();
-        configureButton();
-    }
+        tevRoom = (TextView) findViewById(R.id.tevRoom);
 
-    private void setUpRooms() {
-        rooms = new RoomController(this).fetchRooms();
-    }
+        controller = new RoomController(this);
 
-    private void configureWifiListener() {
+        populateRooms();
+
         wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         registerReceiver(
                 broadcastReceiver,
                 new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
     }
 
-    private void configureButton() {
-        Button btnFindMyRoom = (Button) findViewById(R.id.btnFindMyRoom);
-        btnFindMyRoom.setOnClickListener(new OnClickListener() {
-            
-            public void onClick(View view) {
-                showToast(currentRoom);
-            }
-        }); 
-    }
-
-    private void showToast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-    } 
-
     final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             WifiInfo info = wifiManager.getConnectionInfo();
-            String bssid = info.getBSSID();
-            int speed = info.getLinkSpeed(); 
-
-            for (Room room : rooms) {
-                List<AccessField> accessFields = room.getAccessFields();
-
-                for (AccessField accessField : accessFields) {
-                    Log.e("m", "match: " + accessField.getAccessPoint().getAddress() + ", " + bssid);
-                    if (accessField.getAccessPoint().getAddress().equals(bssid)
-                            && speed > accessField.getMinRange()
-                            && speed < accessField.getMaxRange()) {
-                        Log.e("match", "room: " + room.getRoomName());
-                    }
-                }
-            }
-
-            setCurrentRoom(wifiManager.getConnectionInfo().getBSSID());
+            findMatch(info.getBSSID(), info.getLinkSpeed());
         }
     };
 
-    private void setCurrentRoom(String currentBSSID) {
+    // Fetches all rooms if the user is connected to the Internet
+    private void populateRooms() {
+        if (((ConnectivityManager) getSystemService(
+                Context.CONNECTIVITY_SERVICE))
+                .getActiveNetworkInfo() != null) {
+            rooms = controller.fetchRooms();
+        }
+    }
+
+    // Tries to find a match based on the AP and the connection speed
+    private void findMatch(String bssid, int linkSpeed) {
+        for (Room room : rooms) {
+            List<AccessField> accessFields = room.getAccessFields();
+
+            for (AccessField accessField : accessFields) {
+                if (accessField.getAccessPoint().getAddress().equals(bssid)
+                        && linkSpeed > accessField.getMinRange()
+                        && linkSpeed < accessField.getMaxRange()) {
+
+                    // Update the TextView accordingly
+                    tevRoom.setText(room.getRoomName());
+                    return;
+                }
+            }
+        }
+
+        // When there is no match
+        tevRoom.setText(getString(R.string.unknown_room));
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.layout.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.fetch_rooms:
+                populateRooms();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
     }
 }

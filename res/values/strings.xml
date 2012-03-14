@@ -2,8 +2,9 @@
 <resources>
     <string name="app_name">findmyroom</string>
     <string name="connection_error">Connection error</string>
-    <string name="find_my_room">Find my room</string>
-    <string name="inside_or_near_room">
-        I am currently inside or near room
+    <string name="inside_or_near">
+        I am currently inside or near
     </string>
+    <string name="fetch_rooms">Refresh</string>
+    <string name="unknown_room">X</string>
 </resources>
