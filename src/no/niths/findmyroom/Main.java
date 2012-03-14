@@ -1,11 +1,8 @@
 package no.niths.findmyroom;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import no.niths.domain.signaling.AccessField;
-import no.niths.domain.signaling.Room;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -36,7 +33,6 @@ public class Main extends Activity {
 
     private void setUpRooms() {
         rooms = new RoomController(this).fetchRooms();
-        Log.e("foo", "num: " + rooms.length);
     }
 
     private void configureWifiListener() {
@@ -58,7 +54,7 @@ public class Main extends Activity {
 
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-    }
+    } 
 
     final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
@@ -67,16 +63,19 @@ public class Main extends Activity {
             WifiInfo info = wifiManager.getConnectionInfo();
             String bssid = info.getBSSID();
             int speed = info.getLinkSpeed(); 
-            Toast.makeText(Main.this, "Speed: " + speed, Toast.LENGTH_LONG).show();
 
-//            for (Room room : rooms) {
-//                List<AccessField> accessFields = room.getAccessFields();
-//
-//                for (AccessField accessField : accessFields) {
-//                    if (speed < accessField.getMinRange() &&
-//                            speed >)
-//                }
-//            }
+            for (Room room : rooms) {
+                List<AccessField> accessFields = room.getAccessFields();
+
+                for (AccessField accessField : accessFields) {
+                    Log.e("m", "match: " + accessField.getAccessPoint().getAddress() + ", " + bssid);
+                    if (accessField.getAccessPoint().getAddress().equals(bssid)
+                            && speed > accessField.getMinRange()
+                            && speed < accessField.getMaxRange()) {
+                        Log.e("match", "room: " + room.getRoomName());
+                    }
+                }
+            }
 
             setCurrentRoom(wifiManager.getConnectionInfo().getBSSID());
         }

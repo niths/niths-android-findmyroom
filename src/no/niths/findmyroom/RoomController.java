@@ -1,8 +1,5 @@
 package no.niths.findmyroom;
 
-import no.niths.domain.signaling.Room;
-import no.niths.domain.signaling.ServerURL;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
