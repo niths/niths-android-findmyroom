@@ -3,6 +3,7 @@ package no.niths.findmyroom;
 import java.util.List;
 
 import no.niths.domain.signaling.AccessField;
+import no.niths.domain.signaling.AccessPoint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,6 +13,7 @@ import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -68,7 +70,7 @@ public class Main extends Activity {
                 List<AccessField> accessFields = room.getAccessFields();
 
                 for (AccessField accessField : accessFields) {
-                    if (accessField.getAccessPoint().getAddress().equals(bssid)
+                    if (accessField.getAccessPoint().getAddress().equals(bssid) 
                             && linkSpeed > accessField.getMinRange()
                             && linkSpeed < accessField.getMaxRange()) {
 
