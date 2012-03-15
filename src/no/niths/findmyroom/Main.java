@@ -12,7 +12,6 @@ import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -64,17 +63,19 @@ public class Main extends Activity {
 
     // Tries to find a match based on the AP and the connection speed
     private void findMatch(String bssid, int linkSpeed) {
-        for (Room room : rooms) {
-            List<AccessField> accessFields = room.getAccessFields();
+        if (rooms != null) {
+            for (Room room : rooms) {
+                List<AccessField> accessFields = room.getAccessFields();
 
-            for (AccessField accessField : accessFields) {
-                if (accessField.getAccessPoint().getAddress().equals(bssid)
-                        && linkSpeed > accessField.getMinRange()
-                        && linkSpeed < accessField.getMaxRange()) {
+                for (AccessField accessField : accessFields) {
+                    if (accessField.getAccessPoint().getAddress().equals(bssid)
+                            && linkSpeed > accessField.getMinRange()
+                            && linkSpeed < accessField.getMaxRange()) {
 
-                    // Update the TextView accordingly
-                    tevRoom.setText(room.getRoomName());
-                    return;
+                        // Update the TextView accordingly
+                        tevRoom.setText(room.getRoomName());
+                        return;
+                    }
                 }
             }
         }
